@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -6,7 +7,9 @@ export default defineConfig({
     outDir: 'docs-build',
     emptyOutDir: true,
     rollupOptions: {
-      input: 'docs/index.html'
+      input: {
+        index: resolve(__dirname, 'docs/index.html')
+      }
     }
   }
 });

@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:docs": "vite build --config vite.config.docs.ts",
+    "build:docs": "vite build --config vite.config.docs.ts && node scripts/fix-docs-build.js",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
