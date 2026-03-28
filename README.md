@@ -12,6 +12,10 @@ A reusable, accessible, and customizable web component for banking applications 
 - ✅ **Tested** — Comprehensive test coverage
 - ✅ **Performant** — Debounced search with efficient filtering
 
+## Live demo
+
+Try the working demo here: https://priyanshusingh92.github.io/smart-search-component/
+
 ## Installation
 
 ```bash
