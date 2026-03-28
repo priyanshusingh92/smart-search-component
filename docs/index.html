@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Banking Search - Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 36px;
+    }
+
+    .demo-card {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      margin-bottom: 30px;
+    }
+
+    .theme-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .theme-btn {
+      padding: 10px 20px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .theme-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .theme-btn.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .search-wrapper {
+      margin-bottom: 30px;
+    }
+
+    .event-log {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .event-log h3 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .event-item {
+      background: white;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      border-left: 3px solid #667eea;
+    }
+
+    .event-item .event-type {
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .event-item .event-time {
+      font-size: 12px;
+      color: #999;
+    }
+
+    smart-search {
+      --search-primary-color: #0066cc;
+      --search-background-color: #ffffff;
+      --search-text-color: #333333;
+      --search-border-color: #dddddd;
+      --search-hover-color: #f5f5f5;
+      --search-selected-color: #e6f2ff;
+      --search-focus-color: #0066cc;
+    }
+
+    smart-search.dark {
+      --search-primary-color: #4da6ff;
+      --search-background-color: #2d2d2d;
+      --search-text-color: #ffffff;
+      --search-border-color: #444444;
+      --search-hover-color: #3d3d3d;
+      --search-selected-color: #1a4d7a;
+      --search-focus-color: #4da6ff;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏦 Smart Banking Search</h1>
+
+    <div class="demo-card">
+      <div class="theme-toggle">
+        <button class="theme-btn active" onclick="setTheme('light', this)">☀️ Light</button>
+        <button class="theme-btn" onclick="setTheme('dark', this)">🌙 Dark</button>
+      </div>
+
+      <div class="search-wrapper">
+        <smart-search id="search"></smart-search>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value" id="totalResults">50</div>
+          <div class="stat-label">Total Results</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="searchCount">0</div>
+          <div class="stat-label">Searches</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="selectCount">0</div>
+          <div class="stat-label">Selections</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="event-log">
+        <h3>Event Log</h3>
+        <div id="events"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './dist/smart-search.mjs';
+
+    const bankingData = [
+      { id: 'acc1', type: 'account', title: 'Premium Checking Account', subtitle: '**** 1234', description: 'Balance: $5,234.56', icon: '💳' },
+      { id: 'acc2', type: 'account', title: 'Savings Account', subtitle: '**** 5678', description: 'Balance: $12,450.00', icon: '💰' },
+      { id: 'acc3', type: 'account', title: 'Business Checking', subtitle: '**** 9012', description: 'Balance: $45,678.90', icon: '🏢' },
+      { id: 'acc4', type: 'account', title: 'Money Market Account', subtitle: '**** 3456', description: 'Balance: $25,000.00', icon: '📈' },
+      { id: 'trx1', type: 'transaction', title: 'Coffee Shop Purchase', subtitle: 'Nov 15, 2024', description: '-$4.50 • Starbucks', icon: '☕' },
+      { id: 'trx2', type: 'transaction', title: 'Salary Deposit', subtitle: 'Nov 14, 2024', description: '+$5,000.00 • Direct Deposit', icon: '💵' },
+      { id: 'trx3', type: 'transaction', title: 'Electric Bill Payment', subtitle: 'Nov 13, 2024', description: '-$125.00 • Auto-pay', icon: '⚡' },
+      { id: 'trx4', type: 'transaction', title: 'Online Shopping', subtitle: 'Nov 12, 2024', description: '-$89.99 • Amazon', icon: '🛒' },
+      { id: 'trx5', type: 'transaction', title: 'Restaurant', subtitle: 'Nov 11, 2024', description: '-$67.50 • Italian Bistro', icon: '🍝' },
+      { id: 'cust1', type: 'customer', title: 'John Smith', subtitle: 'Premium Member', description: 'Account since 2018 • 3 accounts', icon: '👤' },
+      { id: 'cust2', type: 'customer', title: 'Sarah Johnson', subtitle: 'Business Member', description: 'Account since 2020 • 5 accounts', icon: '👤' },
+      { id: 'cust3', type: 'customer', title: 'Michael Brown', subtitle: 'Standard Member', description: 'Account since 2021 • 2 accounts', icon: '👤' },
+      { id: 'cust4', type: 'customer', title: 'Emily Davis', subtitle: 'Premium Member', description: 'Account since 2019 • 4 accounts', icon: '👤' },
+      { id: 'other1', type: 'other', title: 'Mortgage Calculator', subtitle: 'Tools', description: 'Calculate your monthly payments', icon: '🏠' },
+      { id: 'other2', type: 'other', title: 'Investment Portfolio', subtitle: 'Services', description: 'View your investment performance', icon: '📊' },
+      { id: 'other3', type: 'other', title: 'Credit Card Application', subtitle: 'Products', description: 'Apply for a new credit card', icon: '💳' },
+      { id: 'other4', type: 'other', title: 'Branch Locator', subtitle: 'Support', description: 'Find branches near you', icon: '📍' },
+    ];
+
+    const filters = [
+      { id: 'account', label: 'Accounts', value: 'account', checked: false },
+      { id: 'transaction', label: 'Transactions', value: 'transaction', checked: false },
+      { id: 'customer', label: 'Customers', value: 'customer', checked: false },
+      { id: 'other', label: 'Other', value: 'other', checked: false },
+    ];
+
+    const searchComponent = document.getElementById('search');
+    searchComponent.results = bankingData;
+    searchComponent.filters = filters;
+    searchComponent.config = {
+      placeholder: 'Search accounts, transactions, customers...',
+      minChars: 2,
+      debounceMs: 300,
+      maxResults: 50,
+      enableFilters: true,
+      highlightMatches: true,
+      caseSensitive: false,
+    };
+
+    let searchCount = 0;
+    let selectCount = 0;
+    const eventsContainer = document.getElementById('events');
+
+    function logEvent(type, detail) {
+      const eventItem = document.createElement('div');
+      eventItem.className = 'event-item';
+      const time = new Date().toLocaleTimeString();
+      eventItem.innerHTML = `
+        <div class="event-type">${type}</div>
+        <div class="event-time">${time}</div>
+        <div>${JSON.stringify(detail, null, 2)}</div>
+      `;
+      eventsContainer.insertBefore(eventItem, eventsContainer.firstChild);
+      while (eventsContainer.children.length > 10) {
+        eventsContainer.removeChild(eventsContainer.lastChild);
+      }
+    }
+
+    searchComponent.addEventListener('search', (e) => {
+      searchCount++;
+      document.getElementById('searchCount').textContent = searchCount;
+      logEvent('search', { query: e.detail.query, filters: e.detail.filters.length });
+    });
+
+    searchComponent.addEventListener('select', (e) => {
+      selectCount++;
+      document.getElementById('selectCount').textContent = selectCount;
+      logEvent('select', {
+        id: e.detail.result.id,
+        title: e.detail.result.title,
+        type: e.detail.result.type,
+      });
+    });
+
+    searchComponent.addEventListener('filter-change', (e) => {
+      logEvent('filter-change', { activeFilters: e.detail.filters.length });
+    });
+
+    searchComponent.addEventListener('open', () => {
+      logEvent('open', {});
+    });
+
+    searchComponent.addEventListener('close', () => {
+      logEvent('close', {});
+    });
+
+    window.setTheme = function(theme, button) {
+      const buttons = document.querySelectorAll('.theme-btn');
+      buttons.forEach((btn) => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      if (theme === 'dark') {
+        searchComponent.classList.add('dark');
+      } else {
+        searchComponent.classList.remove('dark');
+      }
+    };
+  </script>
+</body>
+</html>
