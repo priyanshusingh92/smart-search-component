@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="refresh" content="0; url=/demo/" />
+  <title>Smart Banking Search</title>
+  <script type="module" src="smart-banking-search/dist/smart-search.js"></script>
+
+<smart-search id="search"></smart-search>
+
+<script>
+  const search = document.getElementById('search');
+  
+  search.results = [
+    { id: '1', type: 'account', title: 'Checking Account', subtitle: '**** 1234' },
+    { id: '2', type: 'customer', title: 'John Doe', subtitle: 'Premium Member' }
+  ];
+  
+  search.addEventListener('select', (e) => {
+    console.log('Selected:', e.detail.result);
+  });
+</script>
+</head>
+<body>
+  <p>Redirecting to the demo... <a href="/demo/">Continue to demo</a></p>
+</body>
+</html>
