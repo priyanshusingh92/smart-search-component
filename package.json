@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:docs": "vite build --outDir docs/dist",
+    "build:docs": "vite build --config vite.config.docs.ts",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
